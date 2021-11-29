@@ -1,5 +1,5 @@
-package main
-import (
+package gopass
+import ( //! Import all the necessary packages
 	"os"
 	"fmt"
 	"net"
@@ -52,8 +52,12 @@ func getIP() net.IP {
 func main() {
 	var cmd string
 	var user string
-	var password string
+
 	var running bool = true
+	var root bool = false
+
+	var sym string = " $ "
+	var sym_root string = " # "
 
 	currentTime := time.Now()
 	
@@ -65,17 +69,29 @@ func main() {
 	CLS() //! Clear terminal
 
 	fmt.Print("Password: ", "\033[8m")
-	fmt.Scanln(&password)
+	password := gopass.GetPasswdMasked()
 	fmt.Print("\033[28m")
 
-	if len(password) < 8 {
+	CLS()
+
+	fmt.Print("Confirm password: ", "\033[8m")
+	passwordC := gopass.GetPasswdMasked()
+	fmt.Print("\033[28m")
+
+	if len(password) < 8 || password != passwordC {
 		fmt.Println("Password must be atleast 8 characters")
 		time.Sleep(time.Second * 2)
-	} else {
+	} else if password == passwordC && len(password) >= 8 && len(passwordC) >= 8 {
 		CLS()
 		for running {
-			fmt.Print(user, "@", getIP(), "$ ")
-			fmt.Scanln(&cmd)
+			if root {
+				fmt.Print("root@", getIP(), sym_root)
+				fmt.Scanln(&cmd)
+			} else {
+				fmt.Print(user, "@", getIP(), sym)
+				fmt.Scanln(&cmd)
+			}
+			
 
 			//* Commands for SYSTEM
 
@@ -92,11 +108,31 @@ func main() {
 			} else if cmd == "chg-username" { //! Commands for USER/ACCOUNT
 				fmt.Print("Enter new username: ")
 				fmt.Scanln(&user)
+			} else if cmd == "chg-password" {
+				fmt.Print("Enter new password: ")
 			} else if cmd == "whoami" {
 				fmt.Println("User", user)
+			} else if cmd == "help" {
+				fmt.Println(
+					"Check in the official documentation for full explanations",
+					"\nContact Daniel for the documentation",
+					"\n1. whoami",
+					"\n2. ip",
+					"\n3. time",
+					"\n4. chg-password",
+					"\n5. chg-username",
+				)
+			} else if cmd == "su" {
+				if root != true {
+					root = true
+				} else {
+					root = false
+				}
 			} else {
 				fmt.Println("Invalid command")
 			}
 		}
+	} else {
+		fmt.Println("Something went wrong :(")
 	}
 }
