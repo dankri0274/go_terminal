@@ -1,4 +1,4 @@
-package gopass
+package main
 import ( //! Import all the necessary packages
 	"os"
 	"fmt"
@@ -52,6 +52,8 @@ func getIP() net.IP {
 func main() {
 	var cmd string
 	var user string
+	var password string
+	var passwordC string
 
 	var running bool = true
 	var root bool = false
@@ -68,14 +70,12 @@ func main() {
 
 	CLS() //! Clear terminal
 
-	fmt.Print("Password: ", "\033[8m")
-	password := gopass.GetPasswdMasked()
+	fmt.Printf("Password: %s", password "\033[8m")
 	fmt.Print("\033[28m")
 
 	CLS()
 
-	fmt.Print("Confirm password: ", "\033[8m")
-	passwordC := gopass.GetPasswdMasked()
+	fmt.Printf("Confirm assword: %s", passwordC "\033[8m")
 	fmt.Print("\033[28m")
 
 	if len(password) < 8 || password != passwordC {
